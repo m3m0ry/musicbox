@@ -1,0 +1,9 @@
+name: musicbox
+
+dependencies:
+  - pytest
+  - coverage
+  - jupyter
+  - pip:
+    - mido
+    - python-rtmidi

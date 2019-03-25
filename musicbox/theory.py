@@ -77,6 +77,9 @@ class Note:
         self.tone = Tone(m.group(1))
         self.octave = int(m.group(2))
 
+    def distance(self, other):
+        return abs(self.midi - other.midi)
+
     def __repr__(self):
         return f'Note("{self.tone}{self.octave}")'
 
@@ -102,6 +105,9 @@ class Note:
 
     def __eq__(self, other):
         return self.tone == other.tone and self.octave == other.octave
+
+    def __contains__(self, tone):
+        return self.tone == tone
 
     @property
     def midi(self):
