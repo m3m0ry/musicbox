@@ -3,27 +3,42 @@ from functools import total_ordering
 from itertools import chain
 
 
+def is_flat(tone: str):
+    return 'b' in tone
+
+
+def is_sharp(tone: str):
+    return '#' in tone
+
+
 @total_ordering
 class Tone:
-    tones = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    sharp_tones = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    flat_tones = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+    flat = False
 
     @staticmethod
-    def all(starting='C'):
-        index = Tone.tones.index(starting)
-        for tone in chain(Tone.tones[index:] + Tone.tones[:index]):
+    def all(starting: str = 'C'):
+        index = Tone.sharp_tones.index(starting)
+        for tone in chain(Tone.sharp_tones[index:] + Tone.sharp_tones[:index]):
             yield tone
 
     @staticmethod
-    def number_to_tone(i):
-        return Tone.tones[i]
+    def number_to_tone(i: int):
+        assert 0 <= i < 12
+        return Tone.sharp_tones[i]
 
     @staticmethod
-    def tone_to_number(tone):
-        return Tone.tones.index(tone)
+    def tone_to_number(tone: str):
+        if is_flat(tone):
+            return Tone.flat_tones.index(tone)
+        else:
+            return Tone.sharp_tones.index(tone)
 
     def __init__(self, tone):
         if isinstance(tone, str):
-            self.number = self.tone_to_number(tone.upper())
+            self.number = self.tone_to_number(tone)
+            self.flat = is_flat(tone)
         else:
             self.number = tone
 
@@ -61,15 +76,15 @@ class Note:
     @staticmethod
     def all(min_octave=4, max_octave=4):
         for octave in range(min_octave, max_octave + 1):
-            for tone in Tone.tones:
+            for tone in Tone.sharp_tones:
                 yield Note(f'{tone}{octave}')
 
     @staticmethod
-    def range(low, high):
+    def range(low, high, step=1):
         note = low
         while note != high:
             yield note
-            note = note >> 1
+            note = note >> step
         yield high
 
     def __init__(self, note):
@@ -91,6 +106,7 @@ class Note:
         octave = self.octave
         if tone > self.tone:
             octave -= 1
+        octave -= other // 12
         return Note(f'{tone}{octave}')
 
     def __rshift__(self, other):
@@ -98,6 +114,7 @@ class Note:
         octave = self.octave
         if tone < self.tone:
             octave += 1
+        octave += other // 12
         return Note(f'{tone}{octave}')
 
     def __lt__(self, other):
@@ -225,10 +242,10 @@ class Chord:
         return f'{self.root}{self.chord_type}'
 
     def __eq__(self, other):
-        if len(self.tones) != len(other.tones):
+        if len(self.tones) != len(other.sharp_tones):
             return False
         else:
-            return all(s == o for s, o in zip(self.tones, other.tones))
+            return all(s == o for s, o in zip(self.tones, other.sharp_tones))
 
 
 class Scale:

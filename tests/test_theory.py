@@ -8,6 +8,7 @@ def test_tone_init():
     assert len(list(Tone.all())) == 12
     assert len(list(Tone.all('A'))) == 12
     assert eval(repr(tone1)) == tone1
+    assert Tone('C#') == Tone('Db')
 
 
 def test_tone_shift():
@@ -17,6 +18,8 @@ def test_tone_shift():
     assert tone1 == Tone('C#')
     assert tone2 == tone1 << 1
     assert tone2 << 1 == Tone('B')
+    assert tone1 == tone1 >> 12
+    assert tone1 == tone1 << 12
 
 
 def test_tone_comparison():
@@ -44,6 +47,14 @@ def test_note_shift():
     assert note2 == Note('B3')
     note2 = note2 >> 1
     assert note2 == note1
+    assert note1 >> 12 == Note('C5')
+    assert note1 << 12 == Note('C3')
+    assert note1 >> 13 == Note('C#5')
+    assert note1 << 13 == Note('B2')
+    assert note1 >> 24 == Note('C6')
+    assert note1 >> 25 == Note('C#6')
+    print(note1 << 24)
+    assert note1 << 24 == Note('C2')
 
 
 def test_note_comparison():
@@ -74,4 +85,4 @@ def test_scale_init():
 
 def test_chord_init():
     chord = Chord('C', 'maj')
-    print(chord.tones)
+    # print(chord.tones)

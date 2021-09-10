@@ -1,2 +1,8 @@
+__pycache__
+musicbox.egg-info
 .idea
 .ipynb_checkpoints
+venv
+report.xml
+.pytest_cache
+.tox

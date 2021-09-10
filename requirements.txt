@@ -1,0 +1,5 @@
+pytest
+coverage
+jupyter
+mido
+mingus
